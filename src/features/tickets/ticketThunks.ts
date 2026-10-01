@@ -23,11 +23,11 @@ import { BulkOperationSummary } from '../../types/api';
  */
 export const fetchTickets = createAsyncThunk<
   void,
-  { isAppend?: boolean; bypassSimulation?: boolean } | undefined,
+  { isAppend?: boolean; bypassSimulation?: boolean } | void,
   { state: RootState; dispatch: AppDispatch }
 >('tickets/fetchTickets', async (options = {}, { getState, dispatch }) => {
   const state = getState().tickets;
-  const { isAppend = false, bypassSimulation = false } = options;
+  const { isAppend = false, bypassSimulation = false } = options || {};
 
   if (isAppend) {
     dispatch(setTicketsLoadingMore());
@@ -143,10 +143,10 @@ export const retriageTicketThunk = createAsyncThunk<
  */
 export const pollLiveUpdatesThunk = createAsyncThunk<
   void,
-  { bypassSimulation?: boolean } | undefined,
+  { bypassSimulation?: boolean } | void,
   { state: RootState; dispatch: AppDispatch }
 >('tickets/pollUpdates', async (options = {}, { getState, dispatch }) => {
-  const { bypassSimulation = false } = options;
+  const { bypassSimulation = false } = options || {};
   const lastSync = getState().tickets.lastSyncTimestamp;
 
   try {

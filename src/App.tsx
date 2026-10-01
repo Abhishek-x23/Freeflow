@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useEffect, useState, useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from './store/hooks';
 import {
@@ -16,6 +18,7 @@ import {
 import { AppHeader } from './components/layout/AppHeader';
 import { TicketFilters } from './components/tickets/TicketFilters';
 import { TicketSearch } from './components/tickets/TicketSearch';
+import { DownloadCsvButton } from './components/tickets/DownloadCsvButton';
 import { TicketList } from './components/tickets/TicketList';
 import { TicketDetails } from './components/tickets/TicketDetails';
 import { ReviewQueue } from './components/review/ReviewQueue';
@@ -109,7 +112,7 @@ export function App() {
   // 3. Live Polling Effect (runs every 5 seconds per brief)
   useEffect(() => {
     const interval = setInterval(() => {
-      dispatch(pollLiveUpdatesThunk());
+      dispatch(pollLiveUpdatesThunk({}));
     }, 5000);
 
     return () => clearInterval(interval);
@@ -261,6 +264,9 @@ export function App() {
             {/* Top Toolbar: Search + Quick Action Bar */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
               <TicketSearch onSearchDebounced={handleFilterOrSearchApplied} />
+              <div className="flex items-center gap-2 self-end sm:self-auto">
+                <DownloadCsvButton />
+              </div>
             </div>
 
             {/* Filter Bar */}
