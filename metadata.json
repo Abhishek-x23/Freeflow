@@ -1,0 +1,6 @@
+{
+  "name": "Apex Support Ticket Dashboard",
+  "description": "Production-grade support ticket triage and response dashboard with SLA tracking, real-time sync, and AI review queue.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
