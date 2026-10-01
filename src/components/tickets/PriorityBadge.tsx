@@ -16,45 +16,48 @@ export const PriorityBadge: React.FC<PriorityBadgeProps> = ({
   const p = priority || 'Unknown';
 
   const sizeClasses = {
-    sm: 'text-xs px-2 py-0.5',
-    md: 'text-xs px-2.5 py-1 font-semibold',
-    lg: 'text-sm px-3 py-1 font-bold',
+    sm: 'text-[11px] px-1.5 py-0.5 leading-none font-mono',
+    md: 'text-xs px-2 py-0.5 leading-tight font-mono font-medium',
+    lg: 'text-xs px-2.5 py-1 leading-normal font-mono font-semibold',
   }[size];
 
-  let colorClasses = 'bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-800 dark:text-slate-300';
+  let colorClasses = 'bg-zinc-100 text-zinc-700 border-zinc-200';
 
   switch (p) {
     case 'P0':
-      colorClasses = 'bg-red-100 text-red-800 border-red-300 dark:bg-red-950/70 dark:text-red-300 dark:border-red-800';
+      colorClasses = 'bg-red-50 text-red-700 border-red-200';
       break;
     case 'P1':
-      colorClasses = 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950/70 dark:text-amber-300 dark:border-amber-800';
+      colorClasses = 'bg-amber-50 text-amber-700 border-amber-200';
       break;
     case 'P2':
-      colorClasses = 'bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-950/70 dark:text-blue-300 dark:border-blue-800';
+      colorClasses = 'bg-blue-50 text-blue-700 border-blue-200';
       break;
     case 'P3':
-      colorClasses = 'bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700';
+      colorClasses = 'bg-zinc-100 text-zinc-600 border-zinc-200';
       break;
     case 'P5':
-      // Edge case from T-2004: Invalid priority
-      colorClasses = 'bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-950/70 dark:text-purple-300';
+      colorClasses = 'bg-rose-50 text-rose-700 border-rose-200';
       break;
   }
 
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 rounded-md border tracking-wide uppercase',
+        'inline-flex items-center gap-1 rounded border tracking-tight',
         sizeClasses,
         colorClasses,
         className
       )}
-      title={`Priority SLA: ${p}`}
+      title={`SLA Priority: ${p}`}
     >
-      <span className="w-1.5 h-1.5 rounded-full bg-current opacity-80" />
-      {p}
-      {p === 'P5' && <span className="text-[10px] lowercase text-purple-600 dark:text-purple-400 font-normal">(invalid)</span>}
+      <span className="w-1.5 h-1.5 rounded-full bg-current opacity-75 shrink-0" />
+      <span>{p}</span>
+      {p === 'P5' && (
+        <span className="text-[10px] font-sans text-rose-600 font-normal">
+          (invalid)
+        </span>
+      )}
     </span>
   );
 };

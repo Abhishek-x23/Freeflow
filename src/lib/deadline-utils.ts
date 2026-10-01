@@ -138,42 +138,48 @@ export function getDeadlineBadgeStyle(state: DeadlineState): {
   text: string;
   border: string;
   label: string;
+  dotColor: string;
 } {
   switch (state) {
     case 'late':
       return {
-        bg: 'bg-red-50 dark:bg-red-950/50',
-        text: 'text-red-700 dark:text-red-400',
-        border: 'border-red-200 dark:border-red-900',
+        bg: 'bg-rose-50',
+        text: 'text-rose-700 font-semibold',
+        border: 'border-rose-200',
         label: 'Late',
+        dotColor: 'bg-rose-500',
       };
     case 'at_risk':
       return {
-        bg: 'bg-amber-50 dark:bg-amber-950/50',
-        text: 'text-amber-700 dark:text-amber-400',
-        border: 'border-amber-200 dark:border-amber-900',
+        bg: 'bg-amber-50',
+        text: 'text-amber-800 font-semibold',
+        border: 'border-amber-200',
         label: 'At Risk',
+        dotColor: 'bg-amber-500',
       };
     case 'on_track':
       return {
-        bg: 'bg-emerald-50 dark:bg-emerald-950/50',
-        text: 'text-emerald-700 dark:text-emerald-400',
-        border: 'border-emerald-200 dark:border-emerald-900',
+        bg: 'bg-zinc-50',
+        text: 'text-zinc-700',
+        border: 'border-zinc-200',
         label: 'On Track',
+        dotColor: 'bg-emerald-500',
       };
     case 'future':
       return {
-        bg: 'bg-sky-50 dark:bg-sky-950/50',
-        text: 'text-sky-700 dark:text-sky-400',
-        border: 'border-sky-200 dark:border-sky-900',
+        bg: 'bg-zinc-50',
+        text: 'text-zinc-600',
+        border: 'border-zinc-200',
         label: 'Future',
+        dotColor: 'bg-blue-400',
       };
     default:
       return {
-        bg: 'bg-slate-50 dark:bg-slate-900',
-        text: 'text-slate-600 dark:text-slate-400',
-        border: 'border-slate-200 dark:border-slate-800',
+        bg: 'bg-zinc-50',
+        text: 'text-zinc-500',
+        border: 'border-zinc-200',
         label: 'No SLA',
+        dotColor: 'bg-zinc-400',
       };
   }
 }

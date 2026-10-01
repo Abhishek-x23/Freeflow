@@ -76,8 +76,8 @@ export const TicketList: React.FC<TicketListProps> = ({
   const handleQuickClaim = async (id: string) => {
     try {
       await dispatch(claimTicketThunk({ ticketId: id, agentId: currentAgentId })).unwrap();
-    } catch (err: unknown) {
-      // Handled in Redux and toast
+    } catch {
+      // Handled in Redux
     }
   };
 
@@ -87,7 +87,7 @@ export const TicketList: React.FC<TicketListProps> = ({
 
   // 1. Initial Loading State
   if (loadingStatus === 'loading' && tickets.length === 0) {
-    return <LoadingState message="Fetching support tickets..." />;
+    return <LoadingState message="Loading support tickets..." />;
   }
 
   // 2. Error State
@@ -95,7 +95,7 @@ export const TicketList: React.FC<TicketListProps> = ({
     return (
       <ErrorState
         title="Failed to load tickets"
-        message={errorMessage || 'Simulated 500 error or network failure. You can retry safely.'}
+        message={errorMessage || 'A simulated error or network failure occurred.'}
         onRetry={handleRetry}
       />
     );
@@ -109,47 +109,47 @@ export const TicketList: React.FC<TicketListProps> = ({
   const allSelected = tickets.length > 0 && selectedIds.length === tickets.length;
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-2.5">
       {/* Inline non-blocking error banner if load-more failed */}
       {loadingStatus === 'failed' && tickets.length > 0 && (
-        <div className="flex items-center justify-between p-3 rounded-lg bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900 text-xs text-red-800 dark:text-red-300">
+        <div className="flex items-center justify-between p-2.5 rounded border border-red-200 bg-red-50 text-xs text-red-800">
           <div className="flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
-            <span>Failed to load additional tickets ({errorMessage}).</span>
+            <span>Failed to load more tickets ({errorMessage}).</span>
           </div>
           <button
             onClick={() => dispatch(fetchTickets({ isAppend: true }))}
-            className="font-bold underline hover:no-underline ml-2"
+            className="font-semibold underline hover:no-underline ml-2"
           >
             Retry
           </button>
         </div>
       )}
 
-      {/* Desktop Table View (Hidden on mobile) */}
-      <div className="hidden md:block overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs">
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-hidden rounded-lg border border-zinc-200 bg-white">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-              <th className="w-10 px-4 py-3 text-center">
+            <tr className="bg-zinc-50 border-b border-zinc-200 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">
+              <th className="w-10 px-3 py-2 text-center">
                 <input
                   type="checkbox"
                   checked={allSelected}
                   onChange={handleSelectAll}
-                  className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 border-slate-300 dark:border-slate-700 cursor-pointer"
+                  className="w-3.5 h-3.5 rounded text-blue-600 focus:ring-blue-500 border-zinc-300 cursor-pointer"
                   aria-label="Select all tickets on current view"
                 />
               </th>
-              <th className="px-3 py-3">ID / Plan</th>
-              <th className="px-4 py-3">Subject & Details</th>
-              <th className="px-3 py-3">Priority</th>
-              <th className="px-3 py-3">Status</th>
-              <th className="px-3 py-3">Assigned</th>
-              <th className="px-3 py-3">SLA Deadline</th>
-              <th className="px-3 py-3 text-right">Action</th>
+              <th className="px-3 py-2">ID / Plan</th>
+              <th className="px-3 py-2">Subject & Details</th>
+              <th className="px-3 py-2">Priority</th>
+              <th className="px-3 py-2">Status</th>
+              <th className="px-3 py-2">Assigned</th>
+              <th className="px-3 py-2">SLA Target</th>
+              <th className="px-3 py-2 text-right">Action</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+          <tbody className="divide-y divide-zinc-100">
             {tickets.map((ticket) => (
               <TicketRow
                 key={ticket.external_id}
@@ -166,8 +166,8 @@ export const TicketList: React.FC<TicketListProps> = ({
         </table>
       </div>
 
-      {/* Mobile Card Grid View (Shown on < 768px, perfect for 375px mobile) */}
-      <div className="md:hidden flex flex-col gap-2.5">
+      {/* Mobile Card Grid View (< 768px, verified at 375px) */}
+      <div className="md:hidden flex flex-col gap-2">
         {tickets.map((ticket) => (
           <TicketCard
             key={ticket.external_id}
@@ -182,23 +182,23 @@ export const TicketList: React.FC<TicketListProps> = ({
         ))}
       </div>
 
-      {/* Infinite Scroll Sentinel & Load More Fallback */}
-      <div ref={sentinelRef} className="py-4 text-center">
+      {/* Infinite Scroll Sentinel & Counter */}
+      <div ref={sentinelRef} className="py-3 text-center">
         {loadingStatus === 'loading-more' ? (
-          <div className="inline-flex items-center gap-2 text-xs text-slate-500 font-medium">
-            <Loader2 className="w-4 h-4 animate-spin text-indigo-600" />
-            <span>Loading next page of tickets...</span>
+          <div className="inline-flex items-center gap-2 text-xs text-zinc-500">
+            <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-600" />
+            <span>Loading additional tickets...</span>
           </div>
         ) : pagination.hasMore ? (
           <button
             onClick={() => dispatch(fetchTickets({ isAppend: true }))}
-            className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors"
+            className="h-8 px-3.5 rounded border border-zinc-200 bg-white hover:bg-zinc-50 text-xs font-medium text-zinc-700 transition-colors"
           >
-            Load more tickets ({tickets.length} of {pagination.total})
+            Load more ({tickets.length} of {pagination.total})
           </button>
         ) : (
-          <span className="text-xs text-slate-400">
-            Showing all {pagination.total} matching tickets
+          <span className="text-xs text-zinc-400">
+            Showing all {pagination.total} tickets
           </span>
         )}
       </div>

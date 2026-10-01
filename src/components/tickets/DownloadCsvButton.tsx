@@ -28,36 +28,29 @@ export const DownloadCsvButton: React.FC = () => {
     try {
       let ticketsToExport = visibleTickets;
 
-      // If there are more matching tickets than currently loaded in the client list,
-      // query the API with the exact active filters to export all matching records.
       if (totalMatching > visibleTickets.length) {
         const fullResponse = await apiClient.getTickets(
           filters,
           1,
           Math.min(totalMatching, 10000),
-          true // Bypass artificial delays for fast instant export
+          true
         );
 
         ticketsToExport = fullResponse.tickets;
       }
 
-      // Convert to CSV
       const csvString = convertTicketsToCsv(ticketsToExport);
-
-      // Generate timestamped filename
       const now = new Date();
       const dateStr = now.toISOString().slice(0, 10);
       const timeStr = now.toTimeString().slice(0, 5).replace(':', '');
       const filename = `tickets-export-${dateStr}-${timeStr}.csv`;
 
-      // Trigger browser download
       downloadCsvFile(csvString, filename);
 
       setDownloadSuccess(true);
-      setTimeout(() => setDownloadSuccess(false), 2500);
+      setTimeout(() => setDownloadSuccess(false), 2000);
     } catch (err) {
       console.error('Failed to export CSV:', err);
-      // Fallback: export whatever is currently visible in memory
       if (visibleTickets.length > 0) {
         const csvString = convertTicketsToCsv(visibleTickets);
         downloadCsvFile(csvString, `tickets-export-fallback.csv`);
@@ -76,31 +69,31 @@ export const DownloadCsvButton: React.FC = () => {
           ? 'No tickets to export'
           : `Export ${totalMatching} filtered ticket${totalMatching !== 1 ? 's' : ''} to CSV`
       }
-      className={`inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold border transition-all shadow-2xs shrink-0 ${
+      className={`h-8 inline-flex items-center justify-center gap-1.5 px-3 rounded text-xs font-medium border transition-colors shrink-0 ${
         downloadSuccess
-          ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300'
+          ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
           : isDisabled
-          ? 'bg-slate-100 dark:bg-slate-800/50 border-slate-200 dark:border-slate-800 text-slate-400 cursor-not-allowed'
-          : 'bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-400 active:scale-[0.98]'
+          ? 'bg-zinc-50 border-zinc-200 text-zinc-400 cursor-not-allowed'
+          : 'bg-white border-zinc-200 text-zinc-700 hover:bg-zinc-50 hover:text-zinc-900 active:bg-zinc-100'
       }`}
       aria-label="Download filtered tickets as CSV"
     >
       {isExporting ? (
         <>
-          <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-600 dark:text-indigo-400" />
+          <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-600" />
           <span>Exporting...</span>
         </>
       ) : downloadSuccess ? (
         <>
-          <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-          <span>Downloaded ({totalMatching})</span>
+          <Check className="w-3.5 h-3.5 text-emerald-600" />
+          <span>Exported ({totalMatching})</span>
         </>
       ) : (
         <>
-          <Download className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
-          <span>Download CSV</span>
+          <Download className="w-3.5 h-3.5 text-zinc-400" />
+          <span>Export CSV</span>
           {totalMatching > 0 && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono font-medium">
+            <span className="text-[10px] px-1.5 py-0.2 rounded bg-zinc-100 text-zinc-600 font-mono">
               {totalMatching}
             </span>
           )}

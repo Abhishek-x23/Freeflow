@@ -47,10 +47,6 @@ export const TicketDetails: React.FC<TicketDetailsProps> = ({ ticket, onBack }) 
   const isClaimedByMe = ticket.assigned_to === currentAgentId;
   const isClosed = ticket.status === 'closed';
 
-  // Allowed next status transitions per rules:
-  // open -> in_progress
-  // in_progress -> resolved
-  // resolved -> open
   const getNextAllowedStatuses = (status: TicketStatus): TicketStatus[] => {
     switch (status) {
       case 'open':
@@ -67,8 +63,10 @@ export const TicketDetails: React.FC<TicketDetailsProps> = ({ ticket, onBack }) 
   const nextStatuses = getNextAllowedStatuses(ticket.status);
 
   // Sanitized body rendering
-  const cleanBodyHtml = sanitizeHtml(ticket.body || '<p class="text-slate-400 italic">No description provided for this ticket.</p>');
-  const cleanSummaryHtml = sanitizeHtml(ticket.summary || 'No AI summary generated.');
+  const cleanBodyHtml = sanitizeHtml(
+    ticket.body || '<p class="text-zinc-400 italic">No description provided for this ticket.</p>'
+  );
+  const cleanSummaryHtml = sanitizeHtml(ticket.summary || 'No summary generated.');
 
   // Safe attachment URL validation
   const safeAttachment = sanitizeAttachmentUrl(ticket.attachment_url);
@@ -85,7 +83,7 @@ export const TicketDetails: React.FC<TicketDetailsProps> = ({ ticket, onBack }) 
       await dispatch(
         claimTicketThunk({ ticketId: ticket.external_id, agentId: currentAgentId })
       ).unwrap();
-      setActionSuccess('Ticket claimed successfully!');
+      setActionSuccess('Ticket claimed successfully.');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to claim ticket';
       setActionError(msg);
@@ -105,7 +103,7 @@ export const TicketDetails: React.FC<TicketDetailsProps> = ({ ticket, onBack }) 
       await dispatch(
         updateStatusThunk({ ticketId: ticket.external_id, newStatus })
       ).unwrap();
-      setActionSuccess(`Status transitioned to '${newStatus.replace('_', ' ')}'`);
+      setActionSuccess(`Status changed to '${newStatus.replace('_', ' ')}'.`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to update status';
       setActionError(msg);
@@ -123,7 +121,7 @@ export const TicketDetails: React.FC<TicketDetailsProps> = ({ ticket, onBack }) 
 
     try {
       await dispatch(retriageTicketThunk({ ticketId: ticket.external_id })).unwrap();
-      setActionSuccess('AI re-triage complete! Updated classification & summary.');
+      setActionSuccess('Re-triage complete. Updated classifications & summary.');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to re-triage ticket';
       setActionError(msg);
@@ -136,19 +134,19 @@ export const TicketDetails: React.FC<TicketDetailsProps> = ({ ticket, onBack }) 
     Boolean(ticket.ai_priority) && ticket.ai_priority !== ticket.priority;
 
   return (
-    <div className="max-w-5xl mx-auto py-4 px-4 sm:px-6 flex flex-col gap-6">
-      {/* Top Navigation & Breadcrumb */}
-      <div className="flex items-center justify-between gap-4">
+    <div className="max-w-6xl mx-auto py-2 flex flex-col gap-4">
+      {/* Top Header Bar */}
+      <div className="flex items-center justify-between gap-3 pb-3 border-b border-zinc-200">
         <button
           onClick={onBack}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-600 hover:text-zinc-900 px-2.5 py-1.5 rounded border border-zinc-200 bg-white transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Back to Ticket List</span>
+          <span>Back to tickets</span>
         </button>
 
         <div className="flex items-center gap-2">
-          <span className="font-mono text-xs font-bold text-slate-500">
+          <span className="font-mono text-xs font-semibold text-zinc-500">
             {ticket.external_id}
           </span>
           <TicketStatusBadge status={ticket.status} size="sm" />
@@ -156,16 +154,16 @@ export const TicketDetails: React.FC<TicketDetailsProps> = ({ ticket, onBack }) 
         </div>
       </div>
 
-      {/* Notifications / Errors */}
+      {/* Notifications / Alerts */}
       {actionError && (
-        <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900 text-xs text-red-800 dark:text-red-300 flex items-center justify-between">
+        <div className="p-3 rounded border border-red-200 bg-red-50 text-xs text-red-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <ShieldAlert className="w-4 h-4 text-red-600 shrink-0" />
             <span>{actionError}</span>
           </div>
           <button
             onClick={() => setActionError(null)}
-            className="text-red-700 font-bold ml-2"
+            className="text-red-700 font-semibold ml-2 underline"
           >
             Dismiss
           </button>
@@ -173,63 +171,63 @@ export const TicketDetails: React.FC<TicketDetailsProps> = ({ ticket, onBack }) 
       )}
 
       {actionSuccess && (
-        <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-900 text-xs text-emerald-800 dark:text-emerald-300 flex items-center justify-between">
+        <div className="p-3 rounded border border-emerald-200 bg-emerald-50 text-xs text-emerald-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>{actionSuccess}</span>
           </div>
           <button
             onClick={() => setActionSuccess(null)}
-            className="text-emerald-700 font-bold ml-2"
+            className="text-emerald-700 font-semibold ml-2 underline"
           >
             Dismiss
           </button>
         </div>
       )}
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left 2 Cols: Subject, Body, Customer Information */}
-        <div className="lg:col-span-2 flex flex-col gap-6">
-          {/* Header Card */}
-          <div className="p-5 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs flex flex-col gap-4">
+      {/* Main Content: Two Columns */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {/* Left Column (2/3 width): Ticket Conversation & Triage Analysis */}
+        <div className="lg:col-span-2 flex flex-col gap-4">
+          {/* Main Ticket Details Section */}
+          <div className="bg-white border border-zinc-200 rounded-lg p-4 sm:p-5 flex flex-col gap-3">
             <div>
-              <div className="flex items-center gap-2 text-xs text-slate-500 mb-1">
-                <span>Customer: {ticket.customer_id}</span>
+              <div className="flex items-center gap-2 text-xs text-zinc-500 mb-1">
+                <span>Customer {ticket.customer_id}</span>
                 <span>•</span>
-                <span className="capitalize font-medium text-slate-700 dark:text-slate-300">
+                <span className="capitalize text-zinc-700 font-medium">
                   {ticket.customer_plan} plan
                 </span>
                 {ticket.customer_plan === 'enterprise' && (
-                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200">
-                    SLA Priority Protected (Min P1)
+                  <span className="text-[10px] font-semibold px-1 py-0.2 rounded bg-amber-50 text-amber-800 border border-amber-200">
+                    Enterprise SLA Protected (Min P1)
                   </span>
                 )}
               </div>
               <h1
-                className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white break-words"
+                className="text-base sm:text-lg font-semibold text-zinc-900 break-words"
                 dir="auto"
               >
                 {ticket.subject || '(No subject provided)'}
               </h1>
             </div>
 
-            {/* Sanitized Customer Body */}
-            <div className="border-t border-slate-100 dark:border-slate-800 pt-4">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-                Customer Message (Sanitized)
-              </h4>
+            {/* Sanitized Message Body */}
+            <div className="border-t border-zinc-100 pt-3">
+              <span className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 block mb-2">
+                Customer Message
+              </span>
               <div
-                className="prose dark:prose-invert max-w-none text-sm text-slate-800 dark:text-slate-200 leading-relaxed break-words bg-slate-50/50 dark:bg-slate-800/30 p-4 rounded-xl border border-slate-100 dark:border-slate-800/60"
+                className="prose prose-zinc max-w-none text-xs sm:text-sm text-zinc-800 leading-relaxed break-words bg-zinc-50/60 p-3.5 rounded border border-zinc-150"
                 dir="auto"
                 dangerouslySetInnerHTML={{ __html: cleanBodyHtml }}
               />
             </div>
 
-            {/* Attachment link handling */}
+            {/* Attachment link */}
             {ticket.attachment_url && (
-              <div className="border-t border-slate-100 dark:border-slate-800 pt-3">
-                <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1.5">
+              <div className="border-t border-zinc-100 pt-3">
+                <span className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 block mb-1.5">
                   Attachment
                 </span>
                 {safeAttachment ? (
@@ -237,87 +235,76 @@ export const TicketDetails: React.FC<TicketDetailsProps> = ({ ticket, onBack }) 
                     href={safeAttachment}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-zinc-200 bg-zinc-50 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-zinc-100 transition-colors"
                   >
                     <Paperclip className="w-3.5 h-3.5" />
                     <span className="truncate max-w-xs">{ticket.attachment_url}</span>
-                    <ExternalLink className="w-3 h-3 ml-1 opacity-70" />
+                    <ExternalLink className="w-3 h-3 opacity-60" />
                   </a>
                 ) : hasUnsafeAttachment ? (
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-red-200 bg-red-50 text-red-700 text-xs font-medium">
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-red-200 bg-red-50 text-red-700 text-xs font-medium">
                     <ShieldAlert className="w-4 h-4 text-red-600" />
-                    <span>
-                      Blocked dangerous attachment URL protocol (potential XSS/script execution)
-                    </span>
+                    <span>Blocked unsafe URL protocol (potential security risk)</span>
                   </div>
                 ) : null}
               </div>
             )}
           </div>
 
-          {/* AI Intelligence & Triage Details Card */}
-          <div className="p-5 sm:p-6 rounded-2xl border border-purple-200 dark:border-purple-900/60 bg-purple-50/30 dark:bg-purple-950/20 shadow-xs flex flex-col gap-4">
-            <div className="flex items-center justify-between">
+          {/* AI Triage & Analysis Section */}
+          <div className="bg-white border border-zinc-200 rounded-lg p-4 sm:p-5 flex flex-col gap-3">
+            <div className="flex items-center justify-between pb-2 border-b border-zinc-100">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-purple-600 text-white flex items-center justify-center">
-                  <Sparkles className="w-4 h-4" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                    AI Triage Analysis
-                  </h3>
-                  <span className="text-xs text-purple-700 dark:text-purple-300">
-                    Decision: {ticket.triage_decision.replace('_', ' ')}
-                  </span>
-                </div>
+                <Sparkles className="w-4 h-4 text-blue-600" />
+                <h3 className="text-xs sm:text-sm font-semibold text-zinc-900">
+                  AI Triage Analysis
+                </h3>
+                <span className="text-xs text-zinc-500">
+                  ({ticket.triage_decision.replace('_', ' ')})
+                </span>
               </div>
 
-              {/* Re-run AI Button */}
               <button
                 onClick={handleRetriage}
                 disabled={isSubmitting}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-purple-300 dark:border-purple-800 text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-950 text-xs font-semibold shadow-2xs transition-colors disabled:opacity-50"
+                className="h-7 inline-flex items-center gap-1.5 px-2.5 rounded border border-zinc-200 bg-white hover:bg-zinc-50 text-xs font-medium text-zinc-700 transition-colors disabled:opacity-50"
               >
                 {isSubmitting ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <Loader2 className="w-3 h-3 animate-spin text-blue-600" />
                 ) : (
-                  <Sparkles className="w-3.5 h-3.5" />
+                  <Sparkles className="w-3 h-3 text-blue-600" />
                 )}
-                <span>Re-run AI</span>
+                <span>Re-run Triage</span>
               </button>
             </div>
 
-            {/* AI Summary (Sanitized) */}
+            {/* AI Summary */}
             <div>
-              <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">
-                AI Summary
+              <span className="text-[11px] font-medium uppercase tracking-wider text-zinc-400 block mb-1">
+                Generated Summary
               </span>
               <div
-                className="text-xs text-slate-700 dark:text-slate-300 italic bg-white dark:bg-slate-900/80 p-3 rounded-lg border border-purple-100 dark:border-purple-900/40"
+                className="text-xs text-zinc-700 bg-zinc-50/70 p-3 rounded border border-zinc-100"
                 dangerouslySetInnerHTML={{ __html: cleanSummaryHtml }}
               />
             </div>
 
             {/* Priority Comparison if changed */}
             {hasPriorityDifference && (
-              <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 text-xs">
-                <div className="flex items-center gap-1.5 font-bold text-amber-900 dark:text-amber-200 mb-1">
+              <div className="p-3 rounded border border-amber-200 bg-amber-50/60 text-xs">
+                <div className="flex items-center gap-1.5 font-semibold text-amber-800 mb-1">
                   <Info className="w-3.5 h-3.5 text-amber-600" />
                   <span>Priority Adjusted from AI Suggestion</span>
                 </div>
-                <div className="flex items-center gap-3 mt-1.5">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-slate-500">AI Suggested:</span>
-                    <PriorityBadge priority={ticket.ai_priority} size="sm" />
-                  </div>
-                  <span className="text-slate-400">→</span>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-slate-500">Final Assigned:</span>
-                    <PriorityBadge priority={ticket.priority} size="sm" />
-                  </div>
+                <div className="flex items-center gap-2 text-zinc-600 mt-1">
+                  <span>AI Suggested:</span>
+                  <PriorityBadge priority={ticket.ai_priority} size="sm" />
+                  <span className="text-zinc-400">→</span>
+                  <span>Assigned:</span>
+                  <PriorityBadge priority={ticket.priority} size="sm" />
                 </div>
                 {ticket.review_reason && (
-                  <p className="mt-2 text-slate-600 dark:text-slate-400">
+                  <p className="mt-1.5 text-zinc-700">
                     <strong>Reason:</strong> {ticket.review_reason}
                   </p>
                 )}
@@ -326,26 +313,26 @@ export const TicketDetails: React.FC<TicketDetailsProps> = ({ ticket, onBack }) 
           </div>
         </div>
 
-        {/* Right 1 Col: Actions, Assignment, SLA Countdown */}
-        <div className="flex flex-col gap-6">
-          {/* Action & Status Card */}
-          <div className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs flex flex-col gap-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              Agent Actions
+        {/* Right Column (1/3 width): Compact Actions & Metadata Sidebar */}
+        <div className="flex flex-col gap-4">
+          {/* Action & Assignment Card */}
+          <div className="bg-white border border-zinc-200 rounded-lg p-4 flex flex-col gap-3.5">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+              Assignment & Status
             </h3>
 
-            {/* Claim Action */}
-            <div className="flex flex-col gap-2">
-              <span className="text-xs text-slate-500">Assignment:</span>
+            {/* Assignment Section */}
+            <div className="flex flex-col gap-1.5">
+              <span className="text-xs text-zinc-500">Assignee:</span>
               {assignedAgent ? (
-                <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                <div className="flex items-center justify-between p-2 rounded border border-zinc-200 bg-zinc-50">
                   <div className="flex items-center gap-2">
                     <div
-                      className={`w-6 h-6 rounded-full ${assignedAgent.avatarColor} text-white flex items-center justify-center text-xs font-bold`}
+                      className={`w-5 h-5 rounded-full ${assignedAgent.avatarColor} text-white flex items-center justify-center text-[10px] font-bold shrink-0`}
                     >
                       {assignedAgent.initials}
                     </div>
-                    <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                    <span className="text-xs font-medium text-zinc-800">
                       {assignedAgent.name} {isClaimedByMe && '(You)'}
                     </span>
                   </div>
@@ -353,7 +340,7 @@ export const TicketDetails: React.FC<TicketDetailsProps> = ({ ticket, onBack }) 
                     <button
                       onClick={handleClaim}
                       disabled={isSubmitting}
-                      className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+                      className="text-xs font-medium text-blue-600 hover:underline"
                     >
                       Re-claim
                     </button>
@@ -363,52 +350,52 @@ export const TicketDetails: React.FC<TicketDetailsProps> = ({ ticket, onBack }) 
                 <button
                   onClick={handleClaim}
                   disabled={isSubmitting || isClosed}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-sm transition-colors disabled:opacity-50"
+                  className="w-full h-8 flex items-center justify-center gap-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-medium text-xs transition-colors disabled:opacity-50"
                 >
                   {isSubmitting ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
                   ) : (
-                    <UserCheck className="w-4 h-4" />
+                    <UserCheck className="w-3.5 h-3.5" />
                   )}
-                  <span>Claim this ticket</span>
+                  <span>Claim ticket</span>
                 </button>
               )}
             </div>
 
             {/* Status Transitions */}
-            <div className="flex flex-col gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
-              <span className="text-xs text-slate-500">Allowed Transitions:</span>
+            <div className="flex flex-col gap-2 pt-3 border-t border-zinc-100">
+              <span className="text-xs text-zinc-500">Next Action:</span>
 
               {isClosed ? (
-                <div className="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs text-slate-500 italic">
-                  Ticket is in terminal Closed state (archived).
+                <div className="p-2 rounded bg-zinc-50 border border-zinc-200 text-xs text-zinc-500 italic">
+                  Ticket is archived and closed.
                 </div>
               ) : nextStatuses.length > 0 ? (
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-1.5">
                   {nextStatuses.map((st) => (
                     <button
                       key={st}
                       onClick={() => handleStatusChange(st)}
                       disabled={isSubmitting}
-                      className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-slate-800 dark:text-slate-200 transition-colors disabled:opacity-50"
+                      className="w-full h-8 flex items-center justify-center gap-1.5 rounded border border-zinc-200 hover:bg-zinc-50 text-xs font-medium text-zinc-800 transition-colors disabled:opacity-50"
                     >
-                      {st === 'in_progress' && <Play className="w-3.5 h-3.5 text-indigo-500" />}
-                      {st === 'resolved' && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />}
-                      {st === 'open' && <RotateCcw className="w-3.5 h-3.5 text-sky-500" />}
-                      <span>Move to {st.replace('_', ' ')}</span>
+                      {st === 'in_progress' && <Play className="w-3.5 h-3.5 text-amber-500" />}
+                      {st === 'resolved' && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />}
+                      {st === 'open' && <RotateCcw className="w-3.5 h-3.5 text-blue-600" />}
+                      <span>Mark as {st.replace('_', ' ')}</span>
                     </button>
                   ))}
                 </div>
               ) : (
-                <span className="text-xs text-slate-400">No further transitions available</span>
+                <span className="text-xs text-zinc-400">No further transitions</span>
               )}
             </div>
           </div>
 
-          {/* SLA Tracking Card */}
-          <div className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs flex flex-col gap-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5" />
+          {/* SLA Tracking Sidebar Box */}
+          <div className="bg-white border border-zinc-200 rounded-lg p-4 flex flex-col gap-3">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5 text-zinc-500" />
               <span>SLA Target</span>
             </h3>
 
@@ -418,17 +405,19 @@ export const TicketDetails: React.FC<TicketDetailsProps> = ({ ticket, onBack }) 
               now={now}
             />
 
-            <div className="text-[11px] text-slate-500 space-y-1 pt-2 border-t border-slate-100 dark:border-slate-800">
+            <div className="text-[11px] text-zinc-500 space-y-1.5 pt-2 border-t border-zinc-100">
               <div className="flex justify-between">
-                <span>Created At:</span>
-                <span className="font-mono text-slate-700 dark:text-slate-300">
-                  {ticket.created_at}
-                </span>
+                <span>Created:</span>
+                <span className="font-mono text-zinc-700">{ticket.created_at}</span>
               </div>
               <div className="flex justify-between">
-                <span>Last Updated:</span>
-                <span className="font-mono text-slate-700 dark:text-slate-300">
-                  {ticket.updated_at}
+                <span>Updated:</span>
+                <span className="font-mono text-zinc-700">{ticket.updated_at}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Category:</span>
+                <span className="capitalize text-zinc-700">
+                  {ticket.category.replace('_', ' ')}
                 </span>
               </div>
             </div>

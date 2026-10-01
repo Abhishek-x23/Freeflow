@@ -213,7 +213,7 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col antialiased">
+    <div className="min-h-screen bg-[#fcfcfd] text-zinc-900 flex flex-col antialiased">
       {/* App Header */}
       <AppHeader
         currentPath={currentPath}
@@ -223,32 +223,32 @@ export function App() {
       />
 
       {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5">
         {/* Ticket Details View */}
         {activeTicketId ? (
           detailNotFound ? (
-            <div className="py-16 text-center max-w-md mx-auto">
-              <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-950/60 text-red-600 flex items-center justify-center mx-auto mb-3">
-                <AlertCircle className="w-6 h-6" />
+            <div className="py-16 text-center max-w-sm mx-auto">
+              <div className="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center mx-auto mb-3">
+                <AlertCircle className="w-5 h-5" />
               </div>
-              <h2 className="text-lg font-bold text-slate-800 dark:text-white">
+              <h2 className="text-sm font-semibold text-zinc-900">
                 Ticket Not Found (404)
               </h2>
-              <p className="text-xs text-slate-500 mt-1 mb-4">
-                No ticket exists with ID "{activeTicketId}". It may have been deleted or never existed.
+              <p className="text-xs text-zinc-500 mt-1 mb-4">
+                No ticket exists with ID "{activeTicketId}".
               </p>
               <button
                 onClick={handleBackToList}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold"
+                className="h-8 inline-flex items-center gap-1.5 px-3 rounded bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium transition-colors"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
-                <span>Return to ticket dashboard</span>
+                <span>Return to tickets</span>
               </button>
             </div>
           ) : detailTicket ? (
             <TicketDetails ticket={detailTicket} onBack={handleBackToList} />
           ) : (
-            <div className="py-20 text-center text-xs text-slate-500">
+            <div className="py-20 text-center text-xs text-zinc-400">
               Loading ticket {activeTicketId}...
             </div>
           )
@@ -257,21 +257,19 @@ export function App() {
           <ReviewQueue onOpenTicket={handleOpenDetails} />
         ) : (
           /* Main Dashboard: Tickets List */
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3.5">
             {/* Real-time incoming new tickets banner */}
             <NewTicketsBanner />
 
-            {/* Top Toolbar: Search + Quick Action Bar */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-              <TicketSearch onSearchDebounced={handleFilterOrSearchApplied} />
-              <div className="flex items-center gap-2 self-end sm:self-auto">
+            {/* Integrated Toolbar: Search + Filters + Actions */}
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2 pb-2 border-b border-zinc-200">
+              <div className="flex flex-wrap items-center gap-2">
+                <TicketSearch onSearchDebounced={handleFilterOrSearchApplied} />
+                <TicketFilters onFilterChange={handleFilterOrSearchApplied} />
+              </div>
+              <div className="flex items-center gap-2 shrink-0 self-start lg:self-auto">
                 <DownloadCsvButton />
               </div>
-            </div>
-
-            {/* Filter Bar */}
-            <div className="p-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs">
-              <TicketFilters onFilterChange={handleFilterOrSearchApplied} />
             </div>
 
             {/* Ticket Table / Cards */}

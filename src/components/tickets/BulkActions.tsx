@@ -59,19 +59,19 @@ export const BulkActions: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-2xl px-4">
-      <div className="bg-slate-900/95 dark:bg-slate-950/95 text-white backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700 p-3 sm:p-4 flex flex-col gap-2.5">
+    <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 w-full max-w-xl px-4">
+      <div className="bg-zinc-900 text-zinc-100 rounded-lg shadow-xl border border-zinc-800 p-2.5 sm:p-3 flex flex-col gap-2">
         {/* Results Banner if operation just finished */}
         {resultSummary && (
-          <div className="flex items-center justify-between text-xs pb-2 border-b border-slate-700">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between text-xs pb-1.5 border-b border-zinc-800">
+            <div className="flex items-center gap-1.5">
               {resultSummary.failed === 0 ? (
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
               ) : (
-                <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+                <AlertCircle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               )}
               <span>
-                Completed: <strong>{resultSummary.succeeded}</strong> succeeded
+                <strong>{resultSummary.succeeded}</strong> succeeded
                 {resultSummary.failed > 0 && (
                   <span className="text-amber-300 ml-1">
                     (<strong>{resultSummary.failed}</strong> failed & rolled back)
@@ -81,41 +81,41 @@ export const BulkActions: React.FC = () => {
             </div>
             <button
               onClick={() => setResultSummary(null)}
-              className="text-slate-400 hover:text-white p-1"
+              className="text-zinc-400 hover:text-white p-0.5"
             >
-              <X className="w-3.5 h-3.5" />
+              <X className="w-3 h-3" />
             </button>
           </div>
         )}
 
         {/* Action Controls Bar */}
         {selectedIds.length > 0 && (
-          <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex flex-wrap items-center justify-between gap-2.5 text-xs">
             <div className="flex items-center gap-2">
-              <span className="bg-indigo-600 text-white font-bold px-2 py-0.5 rounded-full text-[11px]">
+              <span className="bg-blue-600 text-white font-mono text-[11px] font-semibold px-1.5 py-0.2 rounded">
                 {selectedIds.length}
               </span>
-              <span className="font-medium text-slate-200">selected</span>
+              <span className="text-zinc-300">selected</span>
               <button
                 onClick={() => dispatch(clearSelection())}
                 disabled={isRunning}
-                className="text-slate-400 hover:text-white underline ml-1"
+                className="text-zinc-400 hover:text-white underline ml-1 text-[11px]"
               >
                 Clear
               </button>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-1.5">
               {/* Claim selected */}
               <button
                 onClick={handleBulkClaim}
                 disabled={isRunning}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-medium rounded-lg transition-colors"
+                className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-medium rounded text-xs transition-colors"
               >
                 {isRunning ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <Loader2 className="w-3 h-3 animate-spin" />
                 ) : (
-                  <UserCheck className="w-3.5 h-3.5" />
+                  <UserCheck className="w-3 h-3" />
                 )}
                 <span>Claim</span>
               </button>
@@ -124,9 +124,9 @@ export const BulkActions: React.FC = () => {
               <button
                 onClick={() => handleBulkStatus('in_progress')}
                 disabled={isRunning}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-200 border border-slate-700 font-medium rounded-lg transition-colors"
+                className="inline-flex items-center gap-1 px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 text-zinc-200 border border-zinc-700 font-medium rounded text-xs transition-colors"
               >
-                <Play className="w-3.5 h-3.5 text-indigo-400" />
+                <Play className="w-3 h-3 text-blue-400" />
                 <span>In Progress</span>
               </button>
 
@@ -134,9 +134,9 @@ export const BulkActions: React.FC = () => {
               <button
                 onClick={() => handleBulkStatus('resolved')}
                 disabled={isRunning}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 text-white font-medium rounded-lg transition-colors"
+                className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-700 hover:bg-emerald-600 disabled:opacity-50 text-white font-medium rounded text-xs transition-colors"
               >
-                <CheckCircle2 className="w-3.5 h-3.5" />
+                <CheckCircle2 className="w-3 h-3" />
                 <span>Resolve</span>
               </button>
             </div>

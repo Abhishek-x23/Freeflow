@@ -41,24 +41,24 @@ export const TicketSearch: React.FC<TicketSearchProps> = ({ onSearchDebounced })
   };
 
   return (
-    <div className="relative w-full max-w-md">
-      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-        <Search className="w-4 h-4" />
+    <div className="relative w-full sm:w-72 md:w-80">
+      <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-zinc-400">
+        <Search className="w-3.5 h-3.5" />
       </div>
       <input
         type="text"
         value={localValue}
         onChange={(e) => setLocalValue(e.target.value)}
-        placeholder="Search tickets by subject, body, or ID..."
-        className="w-full pl-9 pr-9 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+        placeholder="Filter by subject, body, or ID..."
+        className="w-full pl-8 pr-7 h-8 bg-white border border-zinc-200 rounded text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors"
       />
       {localValue && (
         <button
           onClick={handleClear}
-          className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+          className="absolute inset-y-0 right-0 pr-2 flex items-center text-zinc-400 hover:text-zinc-600"
           aria-label="Clear search query"
         >
-          <X className="w-4 h-4" />
+          <X className="w-3.5 h-3.5" />
         </button>
       )}
     </div>

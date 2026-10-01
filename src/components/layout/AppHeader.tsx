@@ -72,58 +72,59 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
     setAgentDropdownOpen(false);
   };
 
+  const isTicketsActive = currentPath === '/tickets' || currentPath === '/' || currentPath.startsWith('/tickets/');
+  const isReviewActive = currentPath === '/review';
+
   return (
-    <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur border-b border-slate-200 dark:border-slate-800 transition-colors">
+    <header className="sticky top-0 z-40 bg-white border-b border-zinc-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-3">
-          {/* Logo & Navigation */}
+        <div className="flex items-center justify-between h-14 gap-3">
+          {/* Brand & Main Navigation */}
           <div className="flex items-center gap-6">
+            {/* Logo */}
             <div
               className="flex items-center gap-2.5 cursor-pointer select-none"
               onClick={() => onNavigate('/tickets')}
             >
-              <div className="w-9 h-9 rounded-lg bg-indigo-600 flex items-center justify-center text-white shadow-sm shadow-indigo-200 dark:shadow-none">
-                <Layers className="w-5 h-5" />
+              <div className="w-7 h-7 rounded bg-blue-600 flex items-center justify-center text-white shrink-0">
+                <Layers className="w-4 h-4" />
               </div>
-              <div>
-                <span className="font-bold text-base tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-sm tracking-tight text-zinc-900">
                   Apex Support
-                  <span className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-                    SLA v2
-                  </span>
                 </span>
-                <span className="text-xs text-slate-500 dark:text-slate-400 block -mt-0.5">
-                  Triage & Operations
+                <span className="text-[10px] font-mono text-zinc-500 bg-zinc-100 px-1.5 py-0.2 rounded border border-zinc-200">
+                  SLA
                 </span>
               </div>
             </div>
 
-            {/* Navigation Tabs */}
-            <nav className="hidden md:flex items-center gap-1">
+            {/* Desktop Navigation Tabs */}
+            <nav className="hidden md:flex items-center gap-1 text-xs">
               <button
                 onClick={() => onNavigate('/tickets')}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
-                  currentPath === '/tickets' || currentPath === '/'
-                    ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 font-semibold'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded transition-colors ${
+                  isTicketsActive
+                    ? 'bg-zinc-100 text-zinc-900 font-semibold'
+                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
                 }`}
               >
-                <Inbox className="w-4 h-4" />
+                <Inbox className="w-3.5 h-3.5 text-zinc-500" />
                 <span>Tickets</span>
               </button>
 
               <button
                 onClick={() => onNavigate('/review')}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
-                  currentPath === '/review'
-                    ? 'bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 font-semibold'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded transition-colors ${
+                  isReviewActive
+                    ? 'bg-zinc-100 text-zinc-900 font-semibold'
+                    : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
                 }`}
               >
-                <Sparkles className="w-4 h-4 text-amber-500" />
-                <span>AI Review Queue</span>
+                <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+                <span>Review Queue</span>
                 {toReviewCount > 0 && (
-                  <span className="ml-1 px-1.5 py-0.5 text-xs rounded-full bg-amber-200 text-amber-900 dark:bg-amber-900 dark:text-amber-200 font-bold tabular-nums">
+                  <span className="ml-0.5 px-1.5 py-0.2 text-[10px] rounded bg-amber-100 text-amber-800 font-mono font-semibold tabular-nums">
                     {toReviewCount}
                   </span>
                 )}
@@ -131,79 +132,80 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
             </nav>
           </div>
 
-          {/* Counters & Agent Switcher */}
-          <div className="flex items-center gap-2 sm:gap-4">
+          {/* Right Toolbar: Counters, Simulation, Agent Switcher */}
+          <div className="flex items-center gap-2 sm:gap-3">
             {/* Live Counters */}
             <div className="hidden sm:flex items-center gap-2 text-xs">
               {/* My tickets (N) */}
               <div
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-200"
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded border border-zinc-200 bg-zinc-50/60 text-zinc-700"
                 title={`Active tickets assigned to ${currentAgent.name}`}
               >
-                <UserCheck className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-                <span>My tickets:</span>
-                <span className="font-bold tabular-nums text-indigo-600 dark:text-indigo-400">
+                <UserCheck className="w-3.5 h-3.5 text-blue-600" />
+                <span className="text-zinc-500">My tickets:</span>
+                <span className="font-semibold tabular-nums text-zinc-900 font-mono">
                   {myTicketsCount}
                 </span>
               </div>
 
               {/* To review (N) */}
-              <div
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-200 cursor-pointer hover:bg-amber-50 dark:hover:bg-amber-950/40 transition-colors"
+              <button
                 onClick={() => onNavigate('/review')}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded border border-zinc-200 bg-zinc-50/60 text-zinc-700 hover:bg-zinc-100 transition-colors"
                 title="Tickets awaiting manual AI triage review"
               >
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                <span>To review:</span>
-                <span className="font-bold tabular-nums text-amber-600 dark:text-amber-400">
+                <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+                <span className="text-zinc-500">To review:</span>
+                <span className="font-semibold tabular-nums text-zinc-900 font-mono">
                   {toReviewCount}
                 </span>
-              </div>
+              </button>
             </div>
 
             {/* Refresh Button */}
             <button
               onClick={onRefresh}
               disabled={isRefreshing}
-              className="p-2 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all"
+              className="p-1.5 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 rounded transition-colors"
               title="Manual refresh"
+              aria-label="Refresh tickets"
             >
-              <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-indigo-600' : ''}`} />
+              <RefreshCw
+                className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin text-blue-600' : ''}`}
+              />
             </button>
 
             {/* Simulation Chaos Toggle */}
             <button
               onClick={toggleSimulation}
-              className={`hidden lg:flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg border font-mono transition-all ${
+              className={`hidden lg:inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded border font-mono transition-colors ${
                 simulationEnabled
-                  ? 'border-amber-300 bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:border-amber-800 dark:text-amber-300'
-                  : 'border-emerald-300 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:border-emerald-800 dark:text-emerald-300'
+                  ? 'border-amber-200 bg-amber-50/70 text-amber-800'
+                  : 'border-zinc-200 bg-zinc-50 text-zinc-600'
               }`}
               title="Click to toggle simulated delay (300-1500ms) and random errors"
             >
-              <Activity className="w-3.5 h-3.5" />
-              <span>Sim: {simulationEnabled ? 'Chaos ON' : 'Fast OFF'}</span>
+              <Activity className="w-3 h-3 text-current" />
+              <span>Sim: {simulationEnabled ? 'Chaos' : 'Fast'}</span>
             </button>
 
             {/* Agent Selector Dropdown */}
             <div className="relative">
               <button
                 onClick={() => setAgentDropdownOpen(!agentDropdownOpen)}
-                className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-left transition-colors"
+                className="flex items-center gap-2 px-2 py-1 rounded border border-zinc-200 hover:bg-zinc-50 text-left transition-colors"
                 aria-haspopup="true"
                 aria-expanded={agentDropdownOpen}
               >
                 <div
-                  className={`w-6 h-6 rounded-full ${currentAgent.avatarColor} text-white flex items-center justify-center text-[11px] font-bold`}
+                  className={`w-5 h-5 rounded-full ${currentAgent.avatarColor} text-white flex items-center justify-center text-[10px] font-bold shrink-0`}
                 >
                   {currentAgent.initials}
                 </div>
-                <div className="hidden sm:block text-xs">
-                  <span className="font-semibold text-slate-800 dark:text-slate-200 block">
-                    {currentAgent.name}
-                  </span>
-                </div>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                <span className="hidden sm:inline text-xs font-medium text-zinc-800">
+                  {currentAgent.name}
+                </span>
+                <ChevronDown className="w-3 h-3 text-zinc-400" />
               </button>
 
               {agentDropdownOpen && (
@@ -212,39 +214,35 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
                     className="fixed inset-0 z-40"
                     onClick={() => setAgentDropdownOpen(false)}
                   />
-                  <div className="absolute right-0 mt-1.5 w-52 bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800 py-1.5 z-50 animate-in fade-in zoom-in-95 duration-100">
-                    <div className="px-3 py-1.5 border-b border-slate-100 dark:border-slate-800 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                      Switch Active Agent
+                  <div className="absolute right-0 mt-1.5 w-48 bg-white rounded-lg shadow-lg border border-zinc-200 py-1 z-50 animate-in fade-in zoom-in-95 duration-75">
+                    <div className="px-3 py-1.5 border-b border-zinc-100 text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">
+                      Active Agent
                     </div>
                     {KNOWN_AGENTS.map((agent) => (
                       <button
                         key={agent.id}
                         onClick={() => handleSelectAgent(agent.id)}
-                        className={`w-full flex items-center justify-between px-3 py-2 text-xs text-left transition-colors ${
+                        className={`w-full flex items-center justify-between px-3 py-1.5 text-xs text-left transition-colors ${
                           agent.id === selectedAgentId
-                            ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-semibold'
-                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+                            ? 'bg-blue-50 text-blue-700 font-semibold'
+                            : 'text-zinc-700 hover:bg-zinc-50'
                         }`}
                       >
                         <div className="flex items-center gap-2">
                           <div
-                            className={`w-6 h-6 rounded-full ${agent.avatarColor} text-white flex items-center justify-center text-[10px] font-bold`}
+                            className={`w-5 h-5 rounded-full ${agent.avatarColor} text-white flex items-center justify-center text-[9px] font-bold`}
                           >
                             {agent.initials}
                           </div>
                           <span>{agent.name}</span>
                         </div>
                         {agent.id === selectedAgentId && (
-                          <span className="text-[10px] bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 px-1.5 py-0.5 rounded">
+                          <span className="text-[10px] text-blue-600 font-medium">
                             Active
                           </span>
                         )}
                       </button>
                     ))}
-
-                    <div className="pt-1.5 mt-1 border-t border-slate-100 dark:border-slate-800 px-3 py-1 text-[11px] text-slate-400">
-                      Simulated agent auth session
-                    </div>
                   </div>
                 </>
               )}
@@ -253,29 +251,29 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
         </div>
 
         {/* Mobile Navigation Row */}
-        <div className="flex md:hidden items-center justify-around py-2 border-t border-slate-100 dark:border-slate-800 text-xs">
+        <div className="flex md:hidden items-center justify-around py-2 border-t border-zinc-100 text-xs">
           <button
             onClick={() => onNavigate('/tickets')}
             className={`flex items-center gap-1.5 py-1 px-3 rounded ${
-              currentPath === '/tickets' || currentPath === '/'
-                ? 'font-bold text-indigo-600 bg-indigo-50 dark:bg-indigo-950'
-                : 'text-slate-600'
+              isTicketsActive
+                ? 'font-semibold text-blue-600 bg-blue-50'
+                : 'text-zinc-600'
             }`}
           >
-            <Inbox className="w-4 h-4" />
+            <Inbox className="w-3.5 h-3.5" />
             <span>Tickets ({myTicketsCount})</span>
           </button>
 
           <button
             onClick={() => onNavigate('/review')}
             className={`flex items-center gap-1.5 py-1 px-3 rounded ${
-              currentPath === '/review'
-                ? 'font-bold text-amber-600 bg-amber-50 dark:bg-amber-950'
-                : 'text-slate-600'
+              isReviewActive
+                ? 'font-semibold text-amber-700 bg-amber-50'
+                : 'text-zinc-600'
             }`}
           >
-            <Sparkles className="w-4 h-4 text-amber-500" />
-            <span>AI Review ({toReviewCount})</span>
+            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+            <span>Review ({toReviewCount})</span>
           </button>
         </div>
       </div>
